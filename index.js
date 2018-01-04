@@ -1,3 +1,29 @@
+const wrapInBraces = str => `{${str}}`
+const wrapInParens = str => `(${str})`
+const concat = (...strs) =>
+  strs.reduce(
+    (block, chunk) => block.concat(chunk),
+    ''
+  )
+
+const argsToString = args => args
+  ? wrapInParens(
+      JSON.stringify(args)
+        .slice(1,-1)
+        .replace(/"(.*)":/g, '$1: ')
+    )
+  : ''
+
+const keysToString = keys =>
+  wrapInBraces(
+    keys.map(
+        key => (typeof key == 'Object')
+          ? key.toString()
+          : key
+      )
+      .join(',')
+  )
+
 function GraphQL ($type /* query | mutation | undefined */ ) {
   const state = {
     $type,
@@ -9,37 +35,21 @@ function GraphQL ($type /* query | mutation | undefined */ ) {
       }
       return state
     },
-    toString: () => {
-      let output = ''
-      if (state.$type)
-         output += `${state.$type} {`
-
-      for (let field in state.$body) {
-        output += `${field} `
-        if (state.$body[field].$args)
-        {
-          output += '('
-          output += JSON.stringify(state.$body[field].$args)
-            .slice(1,-1)
-            .replace(/"(.*)":/g, '$1: ') + ','
-          output += ')'
-        }
-        output += '{'
-        for (let ikey in state.$body[field].keys){
-          const key = state.$body[field].keys[ikey]
-          if (typeof key == 'Object')
-            output += key.toString()
-          else
-            output += key + ','
-        }
-        output += '}'
-      }
-      if (state.$type)
-        output += '}'
-      return (output)
+    toString: () =>
+      concat(
+        state.$type && state.$type + '{' || '',
+        Object.keys(state.$body).map(
+          field =>
+            concat(
+              field,
+              argsToString(state.$body[field].$args),
+              keysToString(state.$body[field].keys)
+            )
+        ).join(','),
+        state.$type && '}' || ''
+      )
     }
-  }
-  return state;
+  return state
 }
 
 console.log(
@@ -49,8 +59,13 @@ console.log(
       'title',
       GraphQL()
         .field('bookmarks', null, [
-          'userId'
+          'userId',
+          GraphQL()
+            .field('song', null, [
+              'id'
+            ])
         ])
+
     ])
     .toString()
 );
