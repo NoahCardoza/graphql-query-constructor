@@ -1,12 +1,13 @@
 const wrapInBraces = str => `{${str}}`
 const wrapInParens = str => `(${str})`
+
 const concat = (...strs) =>
   strs.reduce(
     (block, chunk) => block.concat(chunk),
     ''
   )
 
-const argsToString = args => args
+const argsToString = args => args && Object.keys(args).length !== 0
   ? wrapInParens(
       JSON.stringify(args)
         .slice(1,-1)
@@ -17,16 +18,16 @@ const argsToString = args => args
 const keysToString = keys =>
   wrapInBraces(
     keys.map(
-        key => (typeof key == 'Object')
-          ? key.toString()
-          : key
-      )
-      .join(',')
+      key => (typeof key == 'object')
+        ? key.toString(true)
+        : key
+    )
+    .join(',')
   )
 
-function GraphQL ($type /* query | mutation | undefined */ ) {
+function GraphQL ($type /* query | mutation | undefined */, requestFn) {
   const state = {
-    $type,
+    $mutation: $type == 'mutation',
     $body: {},
     field: (name, $args, keys) => {
       state.$body[name] = {
@@ -35,37 +36,33 @@ function GraphQL ($type /* query | mutation | undefined */ ) {
       }
       return state
     },
-    toString: () =>
-      concat(
-        state.$type && state.$type + '{' || '',
-        Object.keys(state.$body).map(
-          field =>
-            concat(
-              field,
-              argsToString(state.$body[field].$args),
-              keysToString(state.$body[field].keys)
-            )
-        ).join(','),
-        state.$type && '}' || ''
-      )
-    }
+    toString: (recursive) =>
+        concat(
+          console.log(recursive) || '',
+          !recursive ? '{' : '',
+          state.$mutation ? 'mutation{' : '',
+          Object.keys(state.$body).map(
+            field =>
+              concat(
+                field,
+                argsToString(state.$body[field].$args),
+                keysToString(state.$body[field].keys)
+              )
+          ).join(','),
+          state.$mutation ? '}' : '',
+          !recursive ? '}' : ''
+      ),
+    send: () =>
+      requestFn({
+        query: state.toString()
+      })
+  }
   return state
 }
 
-console.log(
-    GraphQL('query')
-    .field('songs', {search: 'Mod'}, [
-      'id',
-      'title',
-      GraphQL()
-        .field('bookmarks', null, [
-          'userId',
-          GraphQL()
-            .field('song', null, [
-              'id'
-            ])
-        ])
+const GraphQLClient = requestFn => ({
+    Query: GraphQL.bind(null, 'query', requestFn),
+    Mutation: GraphQL.bind(null, 'mutation', requestFn)
+})
 
-    ])
-    .toString()
-);
+module.exports = GraphQLClient;
