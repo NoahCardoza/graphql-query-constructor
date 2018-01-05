@@ -1,3 +1,4 @@
+const { parse, print } = require('graphql');
 const wrapInBraces = str => `{${str}}`
 const wrapInParens = str => `(${str})`
 
@@ -51,6 +52,7 @@ function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field)
           ).join(','),
           !recursive ? '}' : ''
       ),
+    prettify: () => print(parse(state.toString())),
     send: () =>
       requestFn({
         query: state.toString()

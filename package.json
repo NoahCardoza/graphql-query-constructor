@@ -17,8 +17,10 @@
     "url": "https://github.com/NoahCardoza/graphql-query-builder/issues"
   },
   "homepage": "https://github.com/NoahCardoza/graphql-query-builder#readme",
-  "devDependencies": {},
-  "dependencies": {
+  "devDependencies": {
     "node-fetch": "^1.7.3"
+  },
+  "dependencies": {
+    "graphql": "^0.12.3"
   }
 }
