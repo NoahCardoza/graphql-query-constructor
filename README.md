@@ -57,5 +57,4 @@ Query('author', {id: 160033}, [
 
 ### Example
 
-A more detailed example can be found inside the [tests folder](tests).
-
+A more detailed example can be found inside the [example folder](example).
