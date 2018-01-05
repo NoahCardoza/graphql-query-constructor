@@ -25,7 +25,7 @@ const keysToString = keys =>
     .join(',')
   )
 
-function GraphQL ($type /* query | mutation | undefined */, requestFn) {
+function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field) {
   const state = {
     $mutation: $type == 'mutation',
     $body: {},
@@ -38,7 +38,6 @@ function GraphQL ($type /* query | mutation | undefined */, requestFn) {
     },
     toString: (recursive) =>
         concat(
-          console.log(recursive) || '',
           !recursive ? '{' : '',
           state.$mutation ? 'mutation{' : '',
           Object.keys(state.$body).map(
@@ -57,6 +56,8 @@ function GraphQL ($type /* query | mutation | undefined */, requestFn) {
         query: state.toString()
       })
   }
+  if (field.length)
+    state.field(...field)
   return state
 }
 
