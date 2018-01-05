@@ -15,15 +15,16 @@ const argsToString = args => args && Object.keys(args).length !== 0
     )
   : ''
 
-const keysToString = keys =>
-  wrapInBraces(
-    keys.map(
-      key => (typeof key == 'object')
-        ? key.toString(true)
-        : key
+const keysToString = keys => keys && keys.length
+  ? wrapInBraces(
+      keys.map(
+        key => (typeof key == 'object')
+          ? key.toString(true)
+          : key
+      )
+      .join(',')
     )
-    .join(',')
-  )
+  : ''
 
 function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field) {
   const state = {
@@ -38,8 +39,8 @@ function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field)
     },
     toString: (recursive) =>
         concat(
+          state.$mutation ? 'mutation' : '',
           !recursive ? '{' : '',
-          state.$mutation ? 'mutation{' : '',
           Object.keys(state.$body).map(
             field =>
               concat(
@@ -48,7 +49,6 @@ function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field)
                 keysToString(state.$body[field].keys)
               )
           ).join(','),
-          state.$mutation ? '}' : '',
           !recursive ? '}' : ''
       ),
     send: () =>
