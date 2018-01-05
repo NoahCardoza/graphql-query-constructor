@@ -1,4 +1,4 @@
-const GraphQLClient = require('../index'); // require('graphql-query-builder')
+const GraphQLClient = require('../index'); // require('graphql-query-constructor')
 const fetch = require('node-fetch')
 
 const debug = data => { // A simple non-intrusive debuging function

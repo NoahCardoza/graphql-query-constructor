@@ -1,7 +1,7 @@
 {
-  "name": "graphql-query-builder",
+  "name": "graphql-query-constructor",
   "version": "1.0.0",
-  "description": "",
+  "description": "A quick and simple query constructor for GraphQL",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/NoahCardoza/graphql-query-builder.git"
   },
-  "keywords": [],
+  "keywords": ["graphql"],
   "author": "Noah Cardoza <noahcardoza@gmail.com>",
   "license": "ISC",
   "bugs": {

@@ -1,7 +1,7 @@
 // Don't mind this file. It is for testing purposes only and only work locally.
 
-const GraphQLClient = require('./index');
-const fetch = require('node-fetch');
+const GraphQLClient = require('./index') // require('graphql-query-constructor')
+const fetch = require('node-fetch')
 
 const debug = data => {
   console.log(data)

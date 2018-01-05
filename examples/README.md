@@ -1,4 +1,4 @@
-# GraphQL Query Builder
+# GraphQL Query Constructor
 
 This code will run with my [simple GraphQL wrapper](https://github.com/NoahCardoza/graphql-goodreads) of the Goodreads API.
 
