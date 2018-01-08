@@ -30,11 +30,11 @@ const keysToString = keys => keys && keys.length
 function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field) {
   const state = {
     $mutation: $type == 'mutation',
-    $body: {},
-    field: (name, $args, keys) => {
-      state.$body[name] = {
+    $fields: {},
+    field: (name, $args, $keys) => {
+      state.$fields[name] = {
         $args,
-        keys
+        $keys
       }
       return state
     },
@@ -42,21 +42,24 @@ function GraphQL ($type /* query | mutation | undefined */, requestFn, ...field)
         concat(
           state.$mutation ? 'mutation' : '',
           !recursive ? '{' : '',
-          Object.keys(state.$body).map(
+          Object.keys(state.$fields).map(
             field =>
               concat(
                 field,
-                argsToString(state.$body[field].$args),
-                keysToString(state.$body[field].keys)
+                argsToString(state.$fields[field].$args),
+                keysToString(state.$fields[field].$keys)
               )
           ).join(','),
           !recursive ? '}' : ''
       ),
     prettify: () => print(parse(state.toString())),
     send: () =>
-      requestFn({
-        query: state.toString()
-      })
+      requestFn(
+        {
+          query: state.toString()
+        },
+        Object.keys(state.$fields)
+      )
   }
   if (field.length)
     state.field(...field)

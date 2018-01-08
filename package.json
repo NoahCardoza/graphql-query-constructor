@@ -1,6 +1,6 @@
 {
   "name": "graphql-query-constructor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A quick and simple query constructor for GraphQL",
   "main": "index.js",
   "scripts": {
